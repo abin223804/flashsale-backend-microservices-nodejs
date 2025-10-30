@@ -6,6 +6,8 @@ import jwt from 'jsonwebtoken';
 dotenv.config();
 const app = express();
 app.use(express.json());
+
+
 const JWT_SECRET = process.env.JWT_SECRET || 'secret';
 app.post('/register', async (req, res) => {
   const { email, password, name } = req.body;
@@ -18,6 +20,7 @@ app.post('/register', async (req, res) => {
     res.status(400).json({error: err.message});
   }
 });
+
 app.post('/login', async (req,res)=>{
   const { email, password } = req.body;
   const r = await pool.query('SELECT id,password_hash FROM users WHERE email=$1',[email]);
