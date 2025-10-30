@@ -1,0 +1,13 @@
+{
+  "name": "notifier-service",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js"
+  },
+  "dependencies": {
+    "ws": "^8.13.0",
+    "kafkajs": "^2.2.4",
+    "dotenv": "^16.0.0",
+    "jsonwebtoken": "^9.0.2"
+  }
+}
