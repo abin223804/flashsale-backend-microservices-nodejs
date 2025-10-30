@@ -38,5 +38,5 @@ Make sure you have:
 
 ### 2️⃣ Clone the Repository
 ```bash
-git clone https://github.com/yourusername/quicksale-backend.git
-cd quicksale-backend
+git clone https://github.com/abin223804/flashsale-backend-microservices-nodejs.git
+cd Flshsale-backend
