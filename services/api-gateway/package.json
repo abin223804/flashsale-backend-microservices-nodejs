@@ -1,6 +1,7 @@
 {
   "name": "api-gateway",
   "main": "src/app.js",
+  "type": "module",
   "scripts": {
     "start": "node src/app.js"
   },
