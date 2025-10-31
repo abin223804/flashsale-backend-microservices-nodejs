@@ -1,3 +1,156 @@
+# version: "3.8"
+
+# services:
+#   # -----------------------------
+#   # Zookeeper
+#   # -----------------------------
+#   zookeeper:
+#     image: confluentinc/cp-zookeeper:7.6.0
+#     container_name: zookeeper
+#     environment:
+#       ZOOKEEPER_CLIENT_PORT: 2181
+#       ZOOKEEPER_TICK_TIME: 2000
+#     ports:
+#       - "2181:2181"
+
+#   # -----------------------------
+#   # Kafka
+#   # -----------------------------
+#   kafka:
+#     image: confluentinc/cp-kafka:7.6.0
+#     container_name: kafka
+#     depends_on:
+#       - zookeeper
+#     environment:
+#       KAFKA_BROKER_ID: 1
+#       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+#       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+#       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+#       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+#       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+#     ports:
+#       - "9092:9092"
+
+#   # -----------------------------
+#   # PostgreSQL Database
+#   # -----------------------------
+#   postgres:
+#     image: postgres:15
+#     container_name: postgres
+#     restart: always
+#     environment:
+#       POSTGRES_USER: quicksale
+#       POSTGRES_PASSWORD: quicksale
+#       POSTGRES_DB: quicksale
+#     ports:
+#       - "5432:5432"
+#     volumes:
+#       - pgdata:/var/lib/postgresql/data
+#       # ✅ Automatically run schema.sql from ./sql folder on first DB creation
+#       - ./sql/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+
+#   # -----------------------------
+#   # Redis
+#   # -----------------------------
+#   redis:
+#     image: redis:7
+#     container_name: redis
+#     ports:
+#       - "6379:6379"
+
+#   # -----------------------------
+#   # Auth Service
+#   # -----------------------------
+#   auth-service:
+#     build: ./services/auth-service
+#     container_name: auth-service
+#     restart: always
+#     environment:
+#       DATABASE_URL: postgresql://quicksale:quicksale@postgres:5432/quicksale
+#       JWT_SECRET: change_this_secret
+#       PORT: 4001
+#     ports:
+#       - "4001:4001"
+#     depends_on:
+#       - postgres
+
+#   # -----------------------------
+#   # Catalog Service
+#   # -----------------------------
+#   catalog-service:
+#     build: ./services/catalog-service
+#     container_name: catalog-service
+#     restart: always
+#     environment:
+#       DATABASE_URL: postgresql://quicksale:quicksale@postgres:5432/quicksale
+#       KAFKA_BROKERS: kafka:9092
+#       PORT: 4002
+#     ports:
+#       - "4002:4002"
+#     depends_on:
+#       - postgres
+#       - kafka
+
+#   # -----------------------------
+#   # Order Service
+#   # -----------------------------
+#   order-service:
+#     build: ./services/order-service
+#     container_name: order-service
+#     restart: always
+#     environment:
+#       DATABASE_URL: postgresql://quicksale:quicksale@postgres:5432/quicksale
+#       KAFKA_BROKERS: kafka:9092
+#       PORT: 4003
+#     ports:
+#       - "4003:4003"
+#     depends_on:
+#       - postgres
+#       - kafka
+
+#   # -----------------------------
+#   # Notifier Service
+#   # -----------------------------
+#   notifier-service:
+#     build: ./services/notifier-service
+#     container_name: notifier-service
+#     restart: always
+#     environment:
+#       KAFKA_BROKERS: kafka:9092
+#       JWT_SECRET: change_this_secret
+#       PORT: 4004
+#     ports:
+#       - "4004:4004"
+#     depends_on:
+#       - kafka
+
+#   # -----------------------------
+#   # API Gateway
+#   # -----------------------------
+#   api-gateway:
+#     build: ./services/api-gateway
+#     container_name: api-gateway
+#     restart: always
+#     environment:
+#       PORT: 8080
+#       JWT_SECRET: change_this_secret
+#       AUTH_URL: http://auth-service:4001
+#       CATALOG_URL: http://catalog-service:4002
+#       ORDER_URL: http://order-service:4003
+#     ports:
+#       - "8080:8080"
+#     depends_on:
+#       - auth-service
+#       - catalog-service
+#       - order-service
+
+# # -----------------------------
+# # Volumes
+# # -----------------------------
+# volumes:
+#   pgdata:
+
+
 version: "3.8"
 
 services:
@@ -46,7 +199,7 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-      # ✅ Automatically run schema.sql from ./sql folder on first DB creation
+      # ✅ Automatically run schema.sql from ./sql folder
       - ./sql/schema.sql:/docker-entrypoint-initdb.d/schema.sql
 
   # -----------------------------
@@ -66,7 +219,11 @@ services:
     container_name: auth-service
     restart: always
     environment:
-      DATABASE_URL: postgresql://quicksale:quicksale@postgres:5432/quicksale
+      DB_USER: quicksale
+      DB_PASSWORD: quicksale
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: quicksale
       JWT_SECRET: change_this_secret
       PORT: 4001
     ports:
@@ -82,7 +239,11 @@ services:
     container_name: catalog-service
     restart: always
     environment:
-      DATABASE_URL: postgresql://quicksale:quicksale@postgres:5432/quicksale
+      DB_USER: quicksale
+      DB_PASSWORD: quicksale
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: quicksale
       KAFKA_BROKERS: kafka:9092
       PORT: 4002
     ports:
@@ -99,7 +260,11 @@ services:
     container_name: order-service
     restart: always
     environment:
-      DATABASE_URL: postgresql://quicksale:quicksale@postgres:5432/quicksale
+      DB_USER: quicksale
+      DB_PASSWORD: quicksale
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: quicksale
       KAFKA_BROKERS: kafka:9092
       PORT: 4003
     ports:
